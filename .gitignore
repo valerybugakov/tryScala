@@ -1,0 +1,8 @@
+# Build outputs
+project/project/
+project/target/
+target/
+
+# logs
+logs/
+.sbtserver
