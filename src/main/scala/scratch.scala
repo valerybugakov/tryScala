@@ -1,106 +1,130 @@
-object Scratch {
-  Map.empty ++ (2004 to 2014).map( _ -> "Omg" )
+Map.empty ++ (2004 to 2014).map( _ -> "Omg" )
 
-  // Declares anonymous (inaccessible) class
-  // creates a single instance of the class named Main
-  // also comes with .apply .unapply features
-  object Main {
-    println("Hello, World!")
+// Declares anonymous (inaccessible) class
+// creates a single instance of the class named Main
+// also comes with .apply .unapply features
+object Main {
+  println("Hello, World!")
 
-    val woot = "omg"
-  }
+  val woot = "omg"
+}
 
-  val res = Main
-  println(s"Ololo ${res.woot}")
+val res = Main
+println(s"Ololo ${res.woot}")
 
-  object Test extends App {
-    println("It's a test!")
-  }
+object Test extends App {
+  println("It's a test!")
+}
 
-  Test.main(Array.empty)
+Test.main(Array.empty)
 
-  // Prints all prime numbers from 1 to 100
-  def isPrime(n: Int) = n != 1 && (2 until n).forall(n % _ != 0)
-  (1 to 100).filter(isPrime)
+// Prints all prime numbers from 1 to 100
+def isPrime(n: Int) = n != 1 && (2 until n).forall(n % _ != 0)
+(1 to 100).filter(isPrime)
 
-  // Case class provides getter and setter for constructor params
-  // and an ability to instantiate the class without new keyword
-  case class A(value: Int) {
-    def double: Int = (A.magicNumber + value) * 2
-  }
+// Case class provides getter and setter for constructor params
+// and an ability to instantiate the class without new keyword
+case class A(value: Int) {
+  def double: Int = (A.magicNumber + value) * 2
+}
 
-  // Companion object represents static methods of the classs
-  object A {
-    private def magicNumber = 3
-  }
+// Companion object represents static methods of the classs
+object A {
+  private def magicNumber = 3
+}
 
-  trait C {
-    def foo = 1
-  }
+trait C {
+  def foo = 1
+}
 
-  val a = A(7)
-  a.double
-  a == A(7) // compare values
-  a eq A(7) // compare pointers
+val a = A(7)
+a.double
+a == A(7) // compare values
+a eq A(7) // compare pointers
 
-  trait D extends C {
-    override def foo = 2
-  }
+trait D extends C {
+  override def foo = 2
+}
 
-  trait F extends C {
-    override def foo = 3
-  }
+trait F extends C {
+  override def foo = 3
+}
 
-  // Multiple inheritance diamond problem resolved by traits order
-  class E extends F with D
+// Multiple inheritance diamond problem resolved by traits order
+class E extends F with D
 
-  val e = new E
-  e.foo
+val e = new E
+e.foo
 
-  // Sealed means that all implementation classes should be listed
-  // in the same file where trait is defined
-  sealed trait User
-  case class LoggedUsed(name: String) extends User
-  case class Guest(name: String) extends User
+// Sealed means that all implementation classes should be listed
+// in the same file where trait is defined
+sealed trait User
+case class LoggedUsed(name: String) extends User
+case class Guest(name: String) extends User
 
-  val user: User = Guest("Bob")
+val user: User = Guest("Bob")
 
-  // Under the hood simple instance of checks
-  user match {
-    case LoggedUsed(name) => println("logged user here")
-    case Guest(name) => println("guest here")
-  }
+// Under the hood simple instance of checks
+user match {
+  case LoggedUsed(name) => println("logged user here")
+  case Guest(name) => println("guest here")
+}
 
 
-  // Infix operators
-  // List[A] = Nil | Cons(A, List[A])
-  1 :: 2 :: 3 :: Nil
-  Nil.::(3).::(2).::(1)
+// Infix operators
+"List[A] = Nil | Cons(A, List[A])"
+1 :: 2 :: 3 :: Nil
+Nil.::(3).::(2).::(1)
 
-  // Case classes recursive pattern matching
-  case class Z[T](i: T)
-  Z(Z(1)) match {
-    case Z(Z(x)) => x
-    case Z(x) => x
-  }
+// Case classes recursive pattern matching
+case class Z[T](i: T)
+Z(Z(1)) match {
+  case Z(Z(x)) => x
+  case Z(x) => x
+}
 
-  // Optional type matching
-  def sqrt(i: Int): Option[Int] = None
-  sqrt(3) match {
-    case Some(x) => x
-    case None => println("Nothing here")
-  }
+// Optional type matching
+def sqrt(i: Int): Option[Int] = None
+sqrt(3) match {
+  case Some(x) => x
+  case None => println("Nothing here")
+}
 
-  // Infix list matching
-  1 :: 2 :: Nil match {
-    case 1 :: _ => println("Got 1")
-    case ::(x, _) => x
-    case _ =>
-  }
+// Infix list matching
+1 :: 2 :: Nil match {
+  case 1 :: _ => println("Got 1")
+  case ::(x, _) => x
+  case _ =>
+}
 
-  // Generics example
-  class G[T]
-  def foo[T](t: Seq[T]): T = t.head
+// Generics example
+class G[T]
+def foo[T](t: Seq[T]): T = t.head
 
-  foo(List(1, 2, 3))
+foo(List(1, 2, 3))
+
+val map = Map("lol" -> 1, "omg" -> 2, "woot" -> 3)
+val lol = "lol"
+map.get(lol)
+map.getOrElse("lolz", Option(None))
+
+map.toSeq.forall { case (a, b) => b > 1 }
+//map.reduce((a, b) => b)
+
+val crit = Option("Boom")
+val fnCrit = crit.map("Omg" == _)
+
+List(fnCrit).collect({ case Some(crit) => crit }).reduceLeftOption(_ && _).getOrElse(true)
+
+Map("a"->1, "b"->2, "c"->3).to[List] match {
+  case List(a,b,_*) => b
+}
+
+object MapExtractor {
+  def unapplySeq[A <% Ordered[A], B <% Ordered[B]]
+  (s: Map[A,B]): Option[Seq[(A,B)]] = Some(s.toSeq.sorted)
+}
+
+Map("b"->2, "a"->1, "c"->3) match {
+  case MapExtractor ( x, xs @ _* ) => println(s"x: $x") ; println(s"xs: $xs")
 }
